@@ -1,29 +1,27 @@
-package dropbox.service;
+package dropbox.services;
 
 
-import dropbox.dao.UserDao;
-import dropbox.model.User;
+import dropbox.repository.UserRepository;
+import dropbox.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 public class UserService {
 
     @Autowired
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 
-    UserDao userDao;
+    UserRepository userRepository;
 
     public ResponseEntity<String> addNewUser(User user) {
         try {
-            userDao.save(user);
+            userRepository.save(user);
             return new ResponseEntity<>("User created", HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
