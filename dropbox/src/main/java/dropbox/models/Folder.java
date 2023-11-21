@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -20,13 +18,13 @@ public class Folder {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User folderOwner;
+    private User user;
 
 
     public Folder(String folderName) {
         this.folderName = folderName;
     }
 
-    public Folder(String folderName, User folderOwner) {
+    public Folder(String folderName, User user) {
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FolderService {
 
@@ -44,8 +46,19 @@ public class FolderService {
          }
          Folder folderToBeCreated = new Folder();
          folderToBeCreated.setFolderName( createFolderRequest.getFolderName());
-         folderToBeCreated.setFolderOwner(createFolderRequest.getFolderOwner());
+         folderToBeCreated.setUser(createFolderRequest.getFolderOwner());
          return this.folderRepository.save(folderToBeCreated);
+    }
+
+    // getting user object from the authentication
+    public List<Folder> getFoldersOfCurrentUser(Authentication authentication){
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found! "));
+
+         List<Folder> userFolders = folderRepository.findByUser(user);
+         return userFolders;
+
     }
 
 
