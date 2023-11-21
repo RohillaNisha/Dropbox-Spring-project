@@ -39,4 +39,6 @@ public class FolderController {
         List<Folder> userFolders = folderService.getFoldersOfCurrentUser(authentication);
         return ResponseEntity.ok(userFolders);
     }
+
+
 }
