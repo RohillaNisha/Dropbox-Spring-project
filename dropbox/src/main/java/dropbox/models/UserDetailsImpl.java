@@ -18,9 +18,9 @@ public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private int id;
-    private String username;
-    private String email;
 
+    private String fullName;
+    private String username;
     @JsonIgnore
     private String password;
 

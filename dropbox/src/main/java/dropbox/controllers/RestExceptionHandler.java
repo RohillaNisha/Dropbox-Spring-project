@@ -1,6 +1,7 @@
 package dropbox.controllers;
 
 
+import dropbox.exceptions.FolderNameCannotBeNullException;
 import dropbox.exceptions.PasswordCannotBeNullException;
 import dropbox.exceptions.UserAlreadyExistsException;
 import dropbox.exceptions.UserNameCannotBeNullException;
@@ -34,6 +35,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      return handleExceptionInternal(e, error, new HttpHeaders(),
      HttpStatusCode.valueOf(409), request);
      }
+
+     @ExceptionHandler(value = { FolderNameCannotBeNullException.class })
+     public ResponseEntity<Object> handleFolderNameIsNull(Exception e, WebRequest
+             request) {
+          var error = new HashMap<String, Object>();
+          error.put("message", e.getMessage());
+          return handleExceptionInternal(e, error, new HttpHeaders(),
+                  HttpStatusCode.valueOf(409), request);
+     }
+
+
 
 
 }

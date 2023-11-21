@@ -18,7 +18,7 @@ public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     //requirement :
-    public static final int jwtExpirationMs = 100 * 60 * 60; // milliseconds
+    public static final int jwtExpirationMs = 1000 * 60 * 60; // milliseconds
 
     private String jwtSecret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
 
