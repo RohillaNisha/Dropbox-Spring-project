@@ -1,4 +1,7 @@
 package dropbox.controllers;
+import dropbox.exceptions.PasswordCannotBeNullException;
+import dropbox.exceptions.UserAlreadyExistsException;
+import dropbox.exceptions.UserNameCannotBeNullException;
 import dropbox.models.User;
 import dropbox.payloads.request.SignupRequest;
 import dropbox.payloads.response.MessageResponse;
@@ -20,16 +23,13 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-
+    // A signup endpoint for a new user creation
     @PostMapping("/signup")
-    public ResponseEntity<MessageResponse> registerUser ( @Valid @RequestBody SignupRequest signupRequest){
-        if(userRepository.existsByUsername(signupRequest.getUsername())){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username already taken. "));
-        }
+    public ResponseEntity<User> registerUser ( @Valid @RequestBody SignupRequest signupRequest) throws PasswordCannotBeNullException, UserNameCannotBeNullException, UserAlreadyExistsException {
 
        User addedUser = userDetailsServiceImpl.createAUser(signupRequest);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(addedUser);
 
 
     }
