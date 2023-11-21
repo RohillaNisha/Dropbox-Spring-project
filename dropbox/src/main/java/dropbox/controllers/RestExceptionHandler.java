@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.Date;
 import java.util.HashMap;
 
+// To handle and display the specific exceptions created instead of default 403.
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -35,5 +34,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      return handleExceptionInternal(e, error, new HttpHeaders(),
      HttpStatusCode.valueOf(409), request);
      }
+
 
 }
