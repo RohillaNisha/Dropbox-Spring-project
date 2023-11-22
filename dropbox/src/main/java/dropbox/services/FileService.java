@@ -16,16 +16,6 @@ public class FileService {
     public File persistFile(File file){
         return this.fileRepository.save(file);
     }
-    public File retrieveFileByFileName(String fileName){
-        return this.fileRepository.findByFileName(fileName);
-    }
 
-    public void removeFile(String fileName) throws Exception{
-        File file = retrieveFileByFileName(fileName);
-        if(file == null){
-            throw new Exception(String.format("File with name %s not found.", fileName));
-        }
-        this.fileRepository.delete(file);
-    }
 
 }

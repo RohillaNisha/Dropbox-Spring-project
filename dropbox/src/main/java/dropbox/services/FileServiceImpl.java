@@ -43,13 +43,7 @@ public class FileServiceImpl {
         }
     }
 
-    public File retrieveFile(String fileName){
-        return fileService.retrieveFileByFileName(fileName);
-    }
 
-    public byte[] downloadFile(String fileName) {
-        return FileUtil.deCompressFile(fileService.retrieveFileByFileName(fileName).getFileByte());
-    }
 
 
 }

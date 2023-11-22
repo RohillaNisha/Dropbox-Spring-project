@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Transactional // Because file uploads handles large data sets, this makes sure that everything goes through.
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    File findByFileName(String fileName);
+
 }

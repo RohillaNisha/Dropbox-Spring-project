@@ -15,8 +15,7 @@ public class FileUtil {
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(file);
-
-try{
+    try{
         ByteArrayOutputStream stream = new ByteArrayOutputStream(file.length);
         byte[] dataHolder = new byte[4 * 1024 ];
         while ( !deflater.finished()){
@@ -25,33 +24,13 @@ try{
 
             stream.close();
             return stream.toByteArray();
-
         }
-
-        } catch (Exception e) {
+    } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public static byte[] deCompressFile(byte[] file) {
-        Inflater inflater = new Inflater();
-        inflater.setInput(file);
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream(file.length);
-        byte[] dataHolder = new byte[4* 1024];
-        try{
-            while(!inflater.finished()){
-                int size = inflater.inflate(dataHolder);
-                stream.write(dataHolder,0,size);
-            }
-            stream.close();
-        } catch (DataFormatException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return stream.toByteArray();
-    }
 }
