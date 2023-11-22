@@ -17,20 +17,31 @@ import java.util.List;
 @RequestMapping("/user")
 public class FileController {
 
- @Autowired
+    @Autowired
     FileServiceImpl fileServiceImpl;
 
-   // Upload a file to a specific folder mentioned i the params with its id
- @PostMapping("/upload/{folderId}")
-     public ResponseEntity<String> uploadFile(@PathVariable Long folderId, @RequestParam("file")MultipartFile file) throws IOException {
+    // Upload a file to a specific folder mentioned i the params with its id
+    @PostMapping("/upload/{folderId}")
+    public ResponseEntity<String> uploadFile(@PathVariable Long folderId, @RequestParam("file") MultipartFile file) throws IOException {
 
-     String uploadStatus = fileServiceImpl.uploadFile(file, folderId);
-     return ResponseEntity.ok(uploadStatus);
+        String uploadStatus = fileServiceImpl.uploadFile(file, folderId);
+        return ResponseEntity.ok(uploadStatus);
 
- }
+    }
 
-
-
-
-
+    // An endpoint to get all the files in a particular folder of a user
+    @GetMapping("/allFiles/{folderId}")
+    public ResponseEntity<List<File>> getAllFilesInAFolder(@PathVariable Long folderId) {
+        List<File> filesInAFolder = fileServiceImpl.getAllFilesByFolderId(folderId);
+        return ResponseEntity.ok(filesInAFolder);
+    }
 }
+
+
+
+
+
+
+
+
+
