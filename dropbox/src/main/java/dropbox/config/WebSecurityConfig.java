@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user/signup", "/user/login").permitAll()
                         .requestMatchers("/user/new-folder").authenticated()
+                        .requestMatchers("/user/upload/{folderId}").authenticated()
                         .anyRequest().authenticated()
                 );
         http.authenticationProvider(authenticationProvider());
