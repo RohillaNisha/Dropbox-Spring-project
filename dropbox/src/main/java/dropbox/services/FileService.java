@@ -1,6 +1,7 @@
 package dropbox.services;
 
 
+import dropbox.exceptions.FolderNotFoundException;
 import dropbox.models.File;
 import dropbox.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,11 @@ public class FileService {
     }
 
 
-    public List<File> getAllFilesByFolderId(Long folderId) {
+    public List<File> getAllFilesByFolderId(Long folderId) throws FolderNotFoundException {
         List<File> allFilesInAFolder = fileRepository.findAllByFolderId(folderId);
+        if(allFilesInAFolder == null || allFilesInAFolder.isEmpty()) {
+            throw new FolderNotFoundException("Folder with id: '"+ folderId+ "' not found. ");
+        }
         return allFilesInAFolder;
     }
 }

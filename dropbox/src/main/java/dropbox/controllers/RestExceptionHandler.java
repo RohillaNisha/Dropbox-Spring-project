@@ -1,10 +1,7 @@
 package dropbox.controllers;
 
 
-import dropbox.exceptions.FolderNameCannotBeNullException;
-import dropbox.exceptions.PasswordCannotBeNullException;
-import dropbox.exceptions.UserAlreadyExistsException;
-import dropbox.exceptions.UserNameCannotBeNullException;
+import dropbox.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +30,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      var error = new HashMap<String, Object>();
      error.put("message", e.getMessage());
      return handleExceptionInternal(e, error, new HttpHeaders(),
-     HttpStatusCode.valueOf(409), request);
+     HttpStatusCode.valueOf(400), request);
      }
 
      @ExceptionHandler(value = { FolderNameCannotBeNullException.class })
@@ -42,8 +39,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
           var error = new HashMap<String, Object>();
           error.put("message", e.getMessage());
           return handleExceptionInternal(e, error, new HttpHeaders(),
-                  HttpStatusCode.valueOf(409), request);
+                  HttpStatusCode.valueOf(400), request);
      }
+
+     @ExceptionHandler(value = { FolderNotFoundException.class })
+     public ResponseEntity<Object> handleFolderNotFound(Exception e, WebRequest
+             request) {
+          var error = new HashMap<String, Object>();
+          error.put("message", e.getMessage());
+          return handleExceptionInternal(e, error, new HttpHeaders(),
+                  HttpStatusCode.valueOf(400), request);
+     }
+
 
 
 

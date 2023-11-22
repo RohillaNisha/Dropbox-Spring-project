@@ -2,18 +2,14 @@ package dropbox.controllers;
 
 
 import dropbox.models.Folder;
-import dropbox.models.User;
 import dropbox.payloads.request.CreateFolderRequest;
-import dropbox.repository.UserRepository;
 import dropbox.services.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -39,6 +35,7 @@ public class FolderController {
         List<Folder> userFolders = folderService.getFoldersOfCurrentUser(authentication);
         return ResponseEntity.ok(userFolders);
     }
+
 
 
 }
