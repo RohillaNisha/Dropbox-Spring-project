@@ -3,6 +3,7 @@ package dropbox.services;
 import dropbox.exceptions.FolderNotFoundException;
 import dropbox.models.File;
 import dropbox.models.Folder;
+import dropbox.repository.FileRepository;
 import dropbox.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,18 +11,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
-public class FileServiceImpl {
-    @Autowired
-    FileService fileService;
+public class FileServiceImpl implements FileService{
 
     @Autowired
     FolderRepository folderRepository;
 
+    @Autowired
+    FileRepository fileRepository;
+
+
+    // A method to upload any type of file by compressing it and then storing it in the db
+    @Override
     public String uploadFile(MultipartFile data , Long folderId) throws IOException {
 
         Optional<Folder> folderOptional = folderRepository.findById(folderId);
@@ -33,8 +39,7 @@ public class FileServiceImpl {
             file.setFileType(data.getContentType());
             file.setFileByte(FileUtil.compressFile(data.getBytes()));
 
-
-            File newFile = this.fileService.persistFile(file);
+            File newFile = persistFile(file);
             if (newFile != null) {
                 return String.format("File %s uploaded successfully! ", data.getOriginalFilename());
             }
@@ -45,21 +50,65 @@ public class FileServiceImpl {
         }
     }
 
-    public List<File> getAllFilesByFolderId(Long folderId) throws FolderNotFoundException {
-        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId);
-        return filesInAFolder;
-    }
-
-    public byte[] downloadFile(File retrievedFile) {
-        System.out.println(FileUtil.deCompressFile(retrievedFile.getFileByte()));
+     // To download the file from the database by first decompressing it and then downloading it.
+     @Override
+     public byte[] downloadFile(File retrievedFile) {
         return FileUtil.deCompressFile(retrievedFile.getFileByte());
     }
 
-    public File retrieveFile(String fileName, Long folderId) throws FileNotFoundException {
-        File retrievedFile = fileService.retrieveFileByFileNameAndFolderId(fileName, folderId);
-        System.out.println("retrieved File " + retrievedFile);
-        return retrievedFile;
+    // Method ensures that the file is saved in the db.
+    @Override
+    public File persistFile(File file){
+        return this.fileRepository.save(file);
     }
 
+    // To get all the files in a particular folder ( By folderId)
+    @Override
+    public List<File> getAllFilesByFolderId(Long folderId) throws FolderNotFoundException {
+        List<File> allFilesInAFolder = fileRepository.findAllByFolderId(folderId);
+        if(allFilesInAFolder.isEmpty()){
+            // No files found for the given folderId
+            Folder folder = folderRepository.findById(folderId).orElse(null);
+            if (folder == null){
+                // Folder doesn't exist
+                throw new FolderNotFoundException("Folder with id '"+ folderId + "' doesn't exists.");
+            } else {
+                // Folder exists but no files found
+                return allFilesInAFolder;
+            }
+        }
+        return allFilesInAFolder;
+    }
+    // To get a particular file by fileName and its parent folderId.
+    @Override
+    public Optional<File> retrieveFileByFileNameAndFolderId(String fileName, Long folderId) throws FileNotFoundException {
+        Optional<File> fileRetrieved = this.fileRepository.findByFileNameAndFolderId(fileName, folderId);
+        if(!fileRetrieved.isPresent()){
+            throw new FileNotFoundException("File with name '" + fileName + " in folder with id '"+ folderId + "' doesn't exist.");
+        }
+        else {
+            return fileRetrieved;
+        }
+    }
+     // To get a particular file with its unique fileId;
+    @Override
+    public Optional<File> getFileByFileId(Long fileId) throws FileNotFoundException {
+        Optional<File> myFile = this.fileRepository.findById(fileId);
+        if(!myFile.isPresent()){
+            throw new FileNotFoundException("File with id '"+ fileId + "' not found.");
+        }
+        return myFile;
+
+    }
+    // To delete a file with its fileName and its parent folderId
+    @Override
+    public String removeFile(String fileName, Long folderId) throws Exception{
+        Optional<File> file = retrieveFileByFileNameAndFolderId(fileName, folderId);
+        if(!file.isPresent()){
+            throw new Exception(String.format("File with name %s not found.", fileName));
+        }
+        this.fileRepository.delete(file.get());
+        return "File '" + fileName + "' from folder id '" + folderId + "' deleted!";
+    }
 
 }

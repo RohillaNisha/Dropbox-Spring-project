@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "folderName"}))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

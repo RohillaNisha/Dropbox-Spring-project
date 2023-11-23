@@ -13,10 +13,10 @@ import java.util.Optional;
 @Transactional // Because file uploads handles large data sets, this makes sure that everything goes through.
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    @Query(value = "SELECT * FROM file WHERE folder_id = :folderId ", nativeQuery = true)
+    @Query(value = "SELECT fl.* FROM file fl LEFT JOIN folder fld ON fl.folder_id = fld.id WHERE fld.id = :folderId ", nativeQuery = true)
     List<File> findAllByFolderId(Long folderId);
 
     @Query(value = "SELECT * FROM file WHERE filename = :fileName AND folder_id = :folderId", nativeQuery = true)
-    File findByFileNameAndFolderId(String fileName, Long folderId);
+    Optional<File> findByFileNameAndFolderId(String fileName, Long folderId);
 
 }

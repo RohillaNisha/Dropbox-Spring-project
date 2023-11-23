@@ -1,6 +1,7 @@
 package dropbox.controllers;
 
 
+import dropbox.exceptions.FolderNotFoundException;
 import dropbox.models.File;
 import dropbox.services.FileService;
 import dropbox.services.FileServiceImpl;
@@ -21,24 +22,21 @@ import java.util.Optional;
 public class FileController {
 
     @Autowired
-    FileServiceImpl fileServiceImpl;
-
-    @Autowired
     FileService fileService;
 
     // Upload a file to a specific folder mentioned i the params with its id
     @PostMapping("/upload/{folderId}")
     public ResponseEntity<String> uploadFile(@PathVariable Long folderId, @RequestParam("file") MultipartFile file) throws IOException {
 
-        String uploadStatus = fileServiceImpl.uploadFile(file, folderId);
+        String uploadStatus = fileService.uploadFile(file, folderId);
         return ResponseEntity.ok(uploadStatus);
 
     }
 
     // An endpoint to get all the files in a particular folder of a user
     @GetMapping("/allFiles/{folderId}")
-    public ResponseEntity<List<File>> getAllFilesInAFolder(@PathVariable Long folderId) {
-        List<File> filesInAFolder = fileServiceImpl.getAllFilesByFolderId(folderId);
+    public ResponseEntity<List<File>> getAllFilesInAFolder(@PathVariable Long folderId) throws FolderNotFoundException {
+        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId);
         return ResponseEntity.ok(filesInAFolder);
     }
 
@@ -56,10 +54,25 @@ public class FileController {
     // An endpoint to get file in a specific folder, by filename
     @GetMapping("/download/{folderId}/{filename}")
     public ResponseEntity<?> downloadFile(@PathVariable String filename, @PathVariable Long folderId) throws FileNotFoundException {
-        File fileDetails = fileServiceImpl.retrieveFile(filename, folderId);
-        byte[] file = fileServiceImpl.downloadFile(fileDetails);
+        Optional<File> fileDetails = fileService.retrieveFileByFileNameAndFolderId(filename, folderId);
+        if(!fileDetails.isPresent()){
+            throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
+        }
+        File foundFile = fileDetails.get();
+        byte[] file = fileService.downloadFile(foundFile);
 
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(fileDetails.getFileType())).body(file);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(foundFile.getFileType())).body(file);
+    }
+
+    // An endpoint to delete a file from a specific folder mentioned with folderId
+    @DeleteMapping("/{folderId}/{filename}")
+    public ResponseEntity<String> deleteFileByFileNameAndFolderId(@PathVariable Long folderId, @PathVariable String filename) throws Exception {
+        Optional<File> fileToDelete = fileService.retrieveFileByFileNameAndFolderId(filename, folderId);
+        if(!fileToDelete.isPresent()){
+            throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
+        }
+        String result = fileService.removeFile(filename, folderId);
+        return ResponseEntity.ok(result);
     }
 
 

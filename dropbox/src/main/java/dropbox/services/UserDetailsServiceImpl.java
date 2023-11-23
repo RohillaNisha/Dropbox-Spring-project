@@ -38,6 +38,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetailsServiceImpl(@Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+
+    // Registration of a new user with fullName, username, role and password. Role should be an array of roles i.e ["admin","mod"] but is set to default value as ["user"]
     public User createAUser(SignupRequest signupRequest)
             throws UserAlreadyExistsException, UserNameCannotBeNullException, PasswordCannotBeNullException {
         if(signupRequest.getUsername() == null  || signupRequest.getUsername().isBlank()|| signupRequest.getUsername().isEmpty()){

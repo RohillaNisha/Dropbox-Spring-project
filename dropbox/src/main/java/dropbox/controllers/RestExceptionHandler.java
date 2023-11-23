@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 // To handle and display the specific exceptions created instead of default 403.
@@ -42,6 +44,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                   HttpStatusCode.valueOf(400), request);
      }
 
+     @ExceptionHandler(value = { FolderNameAlreadyExistsException.class })
+     public ResponseEntity<Object> handleFolderNameAlreadyExists(Exception e, WebRequest
+             request) {
+          var error = new HashMap<String, Object>();
+          error.put("message", e.getMessage());
+          return handleExceptionInternal(e, error, new HttpHeaders(),
+                  HttpStatusCode.valueOf(400), request);
+     }
+
      @ExceptionHandler(value = { FolderNotFoundException.class })
      public ResponseEntity<Object> handleFolderNotFound(Exception e, WebRequest
              request) {
@@ -51,6 +62,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                   HttpStatusCode.valueOf(400), request);
      }
 
+     @ExceptionHandler(value = { FileNotFoundException.class })
+     public ResponseEntity<Object> handleFileNotFound(Exception e, WebRequest
+             request) {
+          var error = new HashMap<String, Object>();
+          error.put("message", e.getMessage());
+          return handleExceptionInternal(e, error, new HttpHeaders(),
+                  HttpStatusCode.valueOf(400), request);
+     }
 
 
 

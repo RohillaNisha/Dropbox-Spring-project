@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"fileName", "folder_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
