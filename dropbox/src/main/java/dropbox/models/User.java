@@ -1,6 +1,8 @@
 package dropbox.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +23,8 @@ public class User {
 
     @Column(name= "full_name", nullable = false)
     private String fullName;
-
+     @NotBlank
+     @Size( max = 20)
     @Column(name="user_name", nullable = false)
     private String username;
 
