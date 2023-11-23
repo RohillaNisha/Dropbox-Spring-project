@@ -13,7 +13,8 @@ public class FileUtil {
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(file);
-    try{
+        deflater.finish();
+
         ByteArrayOutputStream stream = new ByteArrayOutputStream(file.length);
         byte[] dataHolder = new byte[4 * 1024 ];
 
@@ -22,17 +23,14 @@ public class FileUtil {
             stream.write(dataHolder,0,size);
 
         }
+        try{
         stream.close();
-        return stream.toByteArray();
 
     } catch (Exception e) {
             e.printStackTrace();
         }
-    finally{
-        deflater.end();
-    }
 
-        return null;
+        return stream.toByteArray();
     }
 
     @Async

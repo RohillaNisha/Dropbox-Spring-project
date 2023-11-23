@@ -31,11 +31,7 @@ public class FileServiceImpl {
             file.setFileName(data.getOriginalFilename());
             file.setFolder(folder);
             file.setFileType(data.getContentType());
-            System.out.println("Get bytes of the file before compress: " + data.getBytes());
-           // byte[] fileSize = FileUtil.compressFile(data.getBytes());
-            //System.out.println("size of te file is " + fileSize);
-          //  file.setFileByte(FileUtil.compressFile(data.getBytes()));
-            file.setFileByte(data.getBytes());
+            file.setFileByte(FileUtil.compressFile(data.getBytes()));
 
 
             File newFile = this.fileService.persistFile(file);
@@ -55,7 +51,8 @@ public class FileServiceImpl {
     }
 
     public byte[] downloadFile(File retrievedFile) {
-        return retrievedFile.getFileByte();
+        System.out.println(FileUtil.deCompressFile(retrievedFile.getFileByte()));
+        return FileUtil.deCompressFile(retrievedFile.getFileByte());
     }
 
     public File retrieveFile(String fileName, Long folderId) throws FileNotFoundException {
