@@ -73,20 +73,17 @@ public class FileServiceImpl implements FileService{
 
     // To get all the files in a particular folder ( By folderId)
     @Override
-    public List<File> getAllFilesByFolderId(Long folderId) throws FolderNotFoundException {
-        List<File> allFilesInAFolder = fileRepository.findAllByFolderId(folderId);
-        if(allFilesInAFolder.isEmpty()){
-            // No files found for the given folderId
-            Folder folder = folderRepository.findById(folderId).orElse(null);
-            if (folder == null){
-                // Folder doesn't exist
-                throw new FolderNotFoundException("Folder with id '"+ folderId + "' doesn't exists.");
-            } else {
-                // Folder exists but no files found
-                return allFilesInAFolder;
-            }
+    public List<File> getAllFilesByFolderId(Long folderId, Authentication authentication) throws FolderNotFoundException {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        int userId = user.getId();
+        // checks if the folder exists and belongs to the user
+        Optional<Folder> folderOptional = folderRepository.findByIdAndUserId(folderId, userId);
+        if (folderOptional.isEmpty()) {
+            throw new FolderNotFoundException("Folder with id '" + folderId + "' doesn't exist or doesn't belong to the user.");
         }
-        return allFilesInAFolder;
+        return fileRepository.findAllByFolderId(folderId, userId);
     }
     // To get a particular file by fileName and its parent folderId.
     @Override

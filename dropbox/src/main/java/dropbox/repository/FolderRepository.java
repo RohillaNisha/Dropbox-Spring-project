@@ -19,4 +19,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query(value = "SELECT * FROM folder WHERE id = :folderId AND user_id = :userId" , nativeQuery = true)
     Optional<Folder> findUsersFolderById(Long folderId, int userId);
+
+    Optional<Folder> findByIdAndUserId(Long folderId, int userId);
 }

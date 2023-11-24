@@ -18,7 +18,7 @@ public interface FileService {
 
 String uploadFile(MultipartFile data, Long folderId, Authentication authentication) throws IOException;
 File persistFile(File file);
-List<File> getAllFilesByFolderId(Long folderId) throws FolderNotFoundException;
+List<File> getAllFilesByFolderId(Long folderId, Authentication authentication) throws FolderNotFoundException;
 byte[] downloadFile(File retrievedFile);
 Optional<File> retrieveFileByFileNameAndFolderId(String fileName, Long folderId) throws FileNotFoundException;
 Optional<File> getUsersFileByFileId(Long fileId, Authentication authentication) throws FileNotFoundException;

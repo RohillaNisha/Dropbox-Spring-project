@@ -39,7 +39,7 @@ public class FileController {
     // An endpoint to get all the files in a particular folder of a user
     @GetMapping("/allFiles/{folderId}")
     public ResponseEntity<List<File>> getAllFilesInAFolder(@PathVariable Long folderId , Authentication authentication) throws FolderNotFoundException {
-        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId);
+        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId, authentication);
         return ResponseEntity.ok(filesInAFolder);
     }
 
