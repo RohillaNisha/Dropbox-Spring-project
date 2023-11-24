@@ -3,9 +3,13 @@ package dropbox.services;
 import dropbox.exceptions.FolderNotFoundException;
 import dropbox.models.File;
 import dropbox.models.Folder;
+import dropbox.models.User;
 import dropbox.repository.FileRepository;
 import dropbox.repository.FolderRepository;
+import dropbox.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,13 +28,18 @@ public class FileServiceImpl implements FileService{
 
     @Autowired
     FileRepository fileRepository;
+    @Autowired
+    UserRepository userRepository;
 
 
     // A method to upload any type of file by compressing it and then storing it in the db
     @Override
-    public String uploadFile(MultipartFile data , Long folderId) throws IOException {
-
-        Optional<Folder> folderOptional = folderRepository.findById(folderId);
+    public String uploadFile(MultipartFile data , Long folderId, Authentication authentication) throws IOException {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        int userId = user.getId();
+        Optional<Folder> folderOptional = folderRepository.findUsersFolderById(folderId, userId);
         if (folderOptional.isPresent()) {
             Folder folder = folderOptional.get();
             File file = new File();
@@ -92,8 +101,12 @@ public class FileServiceImpl implements FileService{
     }
      // To get a particular file with its unique fileId;
     @Override
-    public Optional<File> getFileByFileId(Long fileId) throws FileNotFoundException {
-        Optional<File> myFile = this.fileRepository.findById(fileId);
+    public Optional<File> getUsersFileByFileId(Long fileId, Authentication authentication) throws FileNotFoundException {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        int userId = user.getId();
+        Optional<File> myFile = this.fileRepository.findUsersFileByFileId(fileId, userId);
         if(!myFile.isPresent()){
             throw new FileNotFoundException("File with id '"+ fileId + "' not found.");
         }

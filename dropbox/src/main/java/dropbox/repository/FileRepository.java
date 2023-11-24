@@ -18,5 +18,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     @Query(value = "SELECT * FROM file WHERE filename = :fileName AND folder_id = :folderId", nativeQuery = true)
     Optional<File> findByFileNameAndFolderId(String fileName, Long folderId);
+    @Query(value = "SELECT fl.* FROM file fl LEFT JOIN folder fld ON fl.folder_id = fld.id WHERE fl.id = :fileId AND fld.user_id = :userId", nativeQuery = true)
+    Optional<File> findUsersFileByFileId(Long fileId, int userId);
 
 }
