@@ -32,12 +32,16 @@ public class FileServiceImpl implements FileService{
     UserRepository userRepository;
 
 
+    @Override
+    public User getUserFromAuthentication(Authentication authentication){
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
     // A method to upload any type of file by compressing it and then storing it in the db
     @Override
     public String uploadFile(MultipartFile data , Long folderId, Authentication authentication) throws IOException {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        User user = getUserFromAuthentication(authentication);
         int userId = user.getId();
         Optional<Folder> folderOptional = folderRepository.findUsersFolderById(folderId, userId);
         if (folderOptional.isPresent()) {
@@ -74,9 +78,7 @@ public class FileServiceImpl implements FileService{
     // To get all the files in a particular folder ( By folderId)
     @Override
     public List<File> getAllFilesByFolderId(Long folderId, Authentication authentication) throws FolderNotFoundException {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        User user = getUserFromAuthentication(authentication);
         int userId = user.getId();
         // checks if the folder exists and belongs to the user
         Optional<Folder> folderOptional = folderRepository.findByIdAndUserId(folderId, userId);
@@ -85,9 +87,15 @@ public class FileServiceImpl implements FileService{
         }
         return fileRepository.findAllByFolderId(folderId, userId);
     }
+
+
     // To get a particular file by fileName and its parent folderId.
     @Override
-    public Optional<File> retrieveFileByFileNameAndFolderId(String fileName, Long folderId) throws FileNotFoundException {
+    public Optional<File> retrieveFileByFileNameAndFolderId(String fileName, Long folderId, User user) throws FileNotFoundException {
+        Optional<Folder> folderOptional = folderRepository.findByIdAndUserId(folderId, user.getId());
+        if (folderOptional.isEmpty()) {
+            throw new FolderNotFoundException("Folder with id '" + folderId + "' doesn't exist or doesn't belong to the user.");
+        }
         Optional<File> fileRetrieved = this.fileRepository.findByFileNameAndFolderId(fileName, folderId);
         if(!fileRetrieved.isPresent()){
             throw new FileNotFoundException("File with name '" + fileName + " in folder with id '"+ folderId + "' doesn't exist.");
@@ -96,12 +104,12 @@ public class FileServiceImpl implements FileService{
             return fileRetrieved;
         }
     }
+
+
      // To get a particular file with its unique fileId;
     @Override
     public Optional<File> getUsersFileByFileId(Long fileId, Authentication authentication) throws FileNotFoundException {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        User user = getUserFromAuthentication(authentication);
         int userId = user.getId();
         Optional<File> myFile = this.fileRepository.findUsersFileByFileId(fileId, userId);
         if(!myFile.isPresent()){
@@ -112,8 +120,10 @@ public class FileServiceImpl implements FileService{
     }
     // To delete a file with its fileName and its parent folderId
     @Override
-    public String removeFile(String fileName, Long folderId) throws Exception{
-        Optional<File> file = retrieveFileByFileNameAndFolderId(fileName, folderId);
+    public String removeFile(String fileName, Long folderId, Authentication authentication) throws Exception{
+        User user = getUserFromAuthentication(authentication);
+
+        Optional<File> file = retrieveFileByFileNameAndFolderId(fileName, folderId,user);
         if(!file.isPresent()){
             throw new Exception(String.format("File with name %s not found.", fileName));
         }

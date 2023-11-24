@@ -43,8 +43,8 @@ public class FileController {
         return ResponseEntity.ok(filesInAFolder);
     }
 
-    @GetMapping("/{folderId}/{fileId}")
-    public ResponseEntity<File> getFileByFileId(@PathVariable Long folderId, @PathVariable Long fileId , Authentication authentication) throws FileNotFoundException {
+    @GetMapping("/{fileId}")
+    public ResponseEntity<File> getFileByFileId( @PathVariable Long fileId , Authentication authentication) throws FileNotFoundException {
 
         Optional<File> myFile = fileService.getUsersFileByFileId(fileId, authentication);
         if(!myFile.isPresent()){
@@ -58,7 +58,8 @@ public class FileController {
     // An endpoint to get file in a specific folder, by filename
     @GetMapping("/download/{folderId}/{filename}")
     public ResponseEntity<?> downloadFile(@PathVariable String filename, @PathVariable Long folderId, Authentication authentication) throws FileNotFoundException {
-        Optional<File> fileDetails = fileService.retrieveFileByFileNameAndFolderId(filename, folderId);
+        User user = fileService.getUserFromAuthentication(authentication);
+        Optional<File> fileDetails = fileService.retrieveFileByFileNameAndFolderId(filename, folderId, user);
         if(!fileDetails.isPresent()){
             throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
         }
@@ -71,11 +72,12 @@ public class FileController {
     // An endpoint to delete a file from a specific folder mentioned with folderId
     @DeleteMapping("/{folderId}/{filename}")
     public ResponseEntity<String> deleteFileByFileNameAndFolderId(@PathVariable Long folderId, @PathVariable String filename , Authentication authentication) throws Exception {
-        Optional<File> fileToDelete = fileService.retrieveFileByFileNameAndFolderId(filename, folderId);
+        User user = fileService.getUserFromAuthentication(authentication);
+        Optional<File> fileToDelete = fileService.retrieveFileByFileNameAndFolderId(filename, folderId, user);
         if(!fileToDelete.isPresent()){
             throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
         }
-        String result = fileService.removeFile(filename, folderId);
+        String result = fileService.removeFile(filename, folderId,authentication);
         return ResponseEntity.ok(result);
     }
 
