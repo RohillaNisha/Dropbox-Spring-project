@@ -1,14 +1,16 @@
 package dropbox.services;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+@Component
 public class FileUtil {
 
-    @Async
     public static byte[] compressFile(byte[] file){
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
@@ -33,7 +35,6 @@ public class FileUtil {
         return stream.toByteArray();
     }
 
-    @Async
     public static byte[] deCompressFile(byte[] file) {
         Inflater inflater = new Inflater();
         inflater.setInput(file);

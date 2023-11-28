@@ -1,6 +1,5 @@
 package dropbox.services;
 
-
 import dropbox.exceptions.PasswordCannotBeNullException;
 import dropbox.exceptions.UserAlreadyExistsException;
 import dropbox.exceptions.UserNameCannotBeNullException;
@@ -42,24 +41,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     // Registration of a new user with fullName, username, role and password. Role should be an array of roles i.e ["admin","mod"] but is set to default value as ["user"]
     public User createAUser(SignupRequest signupRequest)
             throws UserAlreadyExistsException, UserNameCannotBeNullException, PasswordCannotBeNullException {
-        if(signupRequest.getUsername() == null  || signupRequest.getUsername().isBlank()|| signupRequest.getUsername().isEmpty()){
+        if (signupRequest.getUsername() == null || signupRequest.getUsername().isBlank() || signupRequest.getUsername().isEmpty()) {
             throw new UserNameCannotBeNullException("Username cannot be null.");
         }
-        if(signupRequest.getPassword() == null  || signupRequest.getPassword().isBlank()|| signupRequest.getPassword().isEmpty()){
+        if (signupRequest.getPassword() == null || signupRequest.getPassword().isBlank() || signupRequest.getPassword().isEmpty()) {
             throw new PasswordCannotBeNullException("Password cannot be null.");
 
         }
         var existing = this.userRepository.findByUsername(signupRequest.getUsername());
-        if ( existing.isPresent()){
-            throw new UserAlreadyExistsException("The username "+ signupRequest.getUsername()+ " is not available to use.");
+        if (existing.isPresent()) {
+            throw new UserAlreadyExistsException("The username " + signupRequest.getUsername() + " is not available to use.");
         }
 
-        User userToBeAdded = new User( signupRequest.getFullName(),signupRequest.getUsername(), bCryptPasswordEncoder.encode(signupRequest.getPassword()));
+        User userToBeAdded = new User(signupRequest.getFullName(), signupRequest.getUsername(), bCryptPasswordEncoder.encode(signupRequest.getPassword()));
 
         Set<String> strRoles = signupRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if(strRoles == null) {
+        if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
@@ -93,7 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with the username: "+ username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with the username: " + username));
         return UserDetailsImpl.build(user);
 
     }
