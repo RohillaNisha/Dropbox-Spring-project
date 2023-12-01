@@ -12,6 +12,7 @@ import dropbox.security.JwtUtils;
 import dropbox.services.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,27 +44,27 @@ public class AuthController {
 
        User addedUser = userDetailsServiceImpl.createAUser(signupRequest);
 
-        return ResponseEntity.ok(addedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedUser);
 
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest)  {
-       Authentication authentication = authenticationManager.authenticate(
+       Authentication authentication = authenticationManager.authenticate(                 // try to take this logic in service. Create a new class for authlogic, and put createUser and this login inside that
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication); // can be removed from here and put it into SecurityConfig file,
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getFullName(), roles));
+        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getFullName(), roles)); // change this so that it doesn't have all the info even password
 
     }
 

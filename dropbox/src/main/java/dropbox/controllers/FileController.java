@@ -29,24 +29,24 @@ public class FileController {
 
     // Upload a file to a specific folder mentioned i the params with its id
     @PostMapping("/upload/{folderId}")
-    public ResponseEntity<String> uploadFile(@PathVariable Long folderId, @RequestParam("file") MultipartFile file, Authentication authentication) throws IOException {
+    public ResponseEntity<String> uploadFile(@RequestHeader("Authorization") String token, @PathVariable Long folderId, @RequestParam("file") MultipartFile file) throws IOException {
 
-        String uploadStatus = fileService.uploadFile(file, folderId, authentication);
+        String uploadStatus = fileService.uploadFile(file, folderId, token);
         return ResponseEntity.ok(uploadStatus);
 
     }
 
     // An endpoint to get all the files in a particular folder of a user
     @GetMapping("/allFiles/{folderId}")
-    public ResponseEntity<List<File>> getAllFilesInAFolder(@PathVariable Long folderId , Authentication authentication) throws FolderNotFoundException {
-        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId, authentication);
+    public ResponseEntity<List<File>> getAllFilesInAFolder(@RequestHeader("Authorization") String token , @PathVariable Long folderId ) throws FolderNotFoundException {
+        List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId, token);
         return ResponseEntity.ok(filesInAFolder);
     }
 
     @GetMapping("/{fileId}")
-    public ResponseEntity<File> getFileByFileId( @PathVariable Long fileId , Authentication authentication) throws FileNotFoundException {
+    public ResponseEntity<File> getFileByFileId(@RequestHeader("Authorization") String token,  @PathVariable Long fileId ) throws FileNotFoundException {
 
-        Optional<File> myFile = fileService.getUsersFileByFileId(fileId, authentication);
+        Optional<File> myFile = fileService.getUsersFileByFileId(fileId, token);
         if(!myFile.isPresent()){
         throw new FileNotFoundException("File not found");
         }
@@ -57,8 +57,8 @@ public class FileController {
 
     // An endpoint to get file in a specific folder, by filename
     @GetMapping("/download/{folderId}/{filename}")
-    public ResponseEntity<?> downloadFile(@PathVariable String filename, @PathVariable Long folderId, Authentication authentication) throws FileNotFoundException {
-        User user = fileService.getUserFromAuthentication(authentication);
+    public ResponseEntity<?> downloadFile(@RequestHeader("Authorization") String token, @PathVariable String filename, @PathVariable Long folderId) throws FileNotFoundException {
+        User user = fileService.getUserFromToken(token);
         Optional<File> fileDetails = fileService.retrieveFileByFileNameAndFolderId(filename, folderId, user);
         if(!fileDetails.isPresent()){
             throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
@@ -71,13 +71,13 @@ public class FileController {
 
     // An endpoint to delete a file from a specific folder mentioned with folderId
     @DeleteMapping("/{folderId}/{filename}")
-    public ResponseEntity<String> deleteFileByFileNameAndFolderId(@PathVariable Long folderId, @PathVariable String filename , Authentication authentication) throws Exception {
-        User user = fileService.getUserFromAuthentication(authentication);
+    public ResponseEntity<String> deleteFileByFileNameAndFolderId(@RequestHeader("Authorization") String token, @PathVariable Long folderId, @PathVariable String filename) throws Exception {
+        User user = fileService.getUserFromToken(token);
         Optional<File> fileToDelete = fileService.retrieveFileByFileNameAndFolderId(filename, folderId, user);
         if(!fileToDelete.isPresent()){
             throw new FileNotFoundException("File with name '"+ filename + "' in folder with id '"+ folderId +"' not found.");
         }
-        String result = fileService.removeFile(filename, folderId,authentication);
+        String result = fileService.removeFile(filename, folderId,token);
         return ResponseEntity.ok(result);
     }
 

@@ -17,13 +17,13 @@ import java.util.Optional;
 
 public interface FileService {
 
-User getUserFromAuthentication(Authentication authentication);
-String uploadFile(MultipartFile data, Long folderId, Authentication authentication) throws IOException;
+User getUserFromToken(String token);
+String uploadFile(MultipartFile data, Long folderId, String token) throws IOException;
 File persistFile(File file);
-List<File> getAllFilesByFolderId(Long folderId, Authentication authentication) throws FolderNotFoundException;
+List<File> getAllFilesByFolderId(Long folderId,  String token) throws FolderNotFoundException;
 byte[] downloadFile(File retrievedFile);
 Optional<File> retrieveFileByFileNameAndFolderId(String fileName, Long folderId, User user) throws FileNotFoundException;
-Optional<File> getUsersFileByFileId(Long fileId, Authentication authentication) throws FileNotFoundException;
-String removeFile(String fileName, Long folderId, Authentication authentication) throws Exception;
+Optional<File> getUsersFileByFileId(Long fileId,  String token) throws FileNotFoundException;
+String removeFile(String fileName, Long folderId, String token) throws Exception;
 
 }

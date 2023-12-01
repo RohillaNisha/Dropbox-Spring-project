@@ -14,7 +14,7 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-public class JwtUtils {
+public class JwtUtils {   // kind of a service layer
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     //requirement :
@@ -39,7 +39,6 @@ public class JwtUtils {
 
     //retrieve username from jwt token
     public String getUsernameFromJwtToken(String token) {
-
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
@@ -49,7 +48,7 @@ public class JwtUtils {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
             return true;
-        } catch (MalformedJwtException e) {
+        } catch (MalformedJwtException e) {    // Collapse catches
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
@@ -60,5 +59,11 @@ public class JwtUtils {
         }
 
         return false;
+    }
+    // Method to clear the word Bearer from the token
+    public String getCleanToken(String jwtToken) {
+        String  cleanToken = jwtToken.substring(7);
+        return cleanToken;
+
     }
 }

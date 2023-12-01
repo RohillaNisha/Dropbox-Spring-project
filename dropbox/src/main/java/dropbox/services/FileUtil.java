@@ -1,5 +1,4 @@
 package dropbox.services;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +11,10 @@ import java.util.zip.Inflater;
 public class FileUtil {
 
     public static byte[] compressFile(byte[] file){
+        if (file == null) {
+            // Handle the case where the input array is null
+            throw new IllegalArgumentException("Input array cannot be null");
+        }
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(file);
