@@ -1,9 +1,6 @@
 package dropbox.services;
 
-import dropbox.exceptions.PasswordCannotBeNullException;
-import dropbox.exceptions.UserAlreadyExistsException;
-import dropbox.exceptions.UserNameCannotBeNullException;
-import dropbox.exceptions.ValueCannotBeNullException;
+import dropbox.exceptions.*;
 import dropbox.models.ERole;
 import dropbox.models.Role;
 import dropbox.models.User;
@@ -99,14 +96,16 @@ public class AuthenticationService {
     }
 
 
-    public JwtResponse login(LoginRequest loginRequest){
+    public JwtResponse login(LoginRequest loginRequest) throws WrongCredentialsException {
+
+        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new WrongCredentialsException("Invalid username or Password! "));
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
                         loginRequest.getPassword()
                 ));
 
-        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid username or Password! "));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();

@@ -26,6 +26,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      HttpStatusCode.valueOf(409), request);
      }
 
+     @ExceptionHandler(value = { WrongCredentialsException.class })
+     public ResponseEntity<Object> handleWrongCredentials(Exception e, WebRequest
+             request) {
+          var error = new HashMap<String, Object> ();
+          error.put("message", e.getMessage());
+          return handleExceptionInternal(e, error, new HttpHeaders(),
+                  HttpStatusCode.valueOf(409), request);
+     }
+
+
      @ExceptionHandler(value = { PasswordCannotBeNullException.class , UserNameCannotBeNullException.class , ValueCannotBeNullException.class })
      public ResponseEntity<Object> handleNullValue(Exception e, WebRequest
      request) {
