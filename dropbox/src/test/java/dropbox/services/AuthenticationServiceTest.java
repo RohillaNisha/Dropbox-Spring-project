@@ -9,31 +9,23 @@ import dropbox.models.User;
 import dropbox.payloads.request.SignupRequest;
 import dropbox.repository.RoleRepository;
 import dropbox.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource("classpath:application-test.properties")
 class AuthenticationServiceTest {
 
     @Mock
@@ -47,37 +39,37 @@ class AuthenticationServiceTest {
     @InjectMocks
     private AuthenticationService authenticationService;
 
-
-    @AfterEach
-    @DisplayName("Deletes test user created during testing 'register a user' method")
-    public void tearDown(){
-        userRepository.deleteAll();
+    @BeforeEach
+    void setup() {
+        reset(userRepository, bCryptPasswordEncoder, roleRepository);
     }
 
 
     @Test
     @DisplayName("Should pass when a new user is created")
     void testCreateAUser() throws UserAlreadyExistsException, UserNameCannotBeNullException, PasswordCannotBeNullException {
-        Set<String> roles = new HashSet<>();
-        roles.add("user");
 
+        // Mock the behavior of userRepository.findByUsername to return empty optional
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
+        // Mock the behavior of roleRepo.findByName to return a user role
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(new Role(ERole.ROLE_USER)));
+
+        // Mock the behavior of bCryptPasswordEncoder.encode to return a dummy password
+        when(bCryptPasswordEncoder.encode(any(CharSequence.class))).thenReturn("encodedPassword");
+
+        // Create a new Signup Request
         SignupRequest newSignupUser = new SignupRequest();
         newSignupUser.setFullName("test");
         newSignupUser.setUsername("test");
         newSignupUser.setPassword("test1212");
-        newSignupUser.setRole(roles);
 
-
-
-        when(bCryptPasswordEncoder.encode(any(CharSequence.class))).thenReturn("encodedPassword");
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(new Role(ERole.ROLE_USER)));
+        // Calling the method to be tested
         boolean addedUser = authenticationService.createAUser(newSignupUser);
 
         // Assert that the user was created successfully
-
         Assertions.assertTrue(addedUser);
-        verify(userRepository,times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
         verify(roleRepository, times(1)).findByName(ERole.ROLE_USER);
         verify(bCryptPasswordEncoder, times(1)).encode("test1212");
 
