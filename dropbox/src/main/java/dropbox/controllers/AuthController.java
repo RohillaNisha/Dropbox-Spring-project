@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/user")
 public class AuthController {
@@ -41,7 +40,7 @@ public class AuthController {
         }
 
     }
-
+     // An endpoint for login of registered user
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         JwtResponse loginResponse = authenticationService.login(loginRequest);

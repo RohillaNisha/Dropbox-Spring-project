@@ -12,7 +12,6 @@ import dropbox.repository.RoleRepository;
 import dropbox.repository.UserRepository;
 import dropbox.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,7 +38,6 @@ public class AuthenticationService {
     private final JwtUtils jwtUtils;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
 
     // Registration of a new user with fullName, username, role and password. Role should be an array of roles i.e ["admin","mod"] but is set to default value as ["user"]
@@ -91,8 +89,8 @@ public class AuthenticationService {
             });
         }
         userToBeAdded.setRoles(roles);
-       this.userRepository.save(userToBeAdded);
-       return true;
+        this.userRepository.save(userToBeAdded);
+        return true;
     }
 
 
@@ -113,7 +111,7 @@ public class AuthenticationService {
                 .collect(Collectors.toList());
 
         JwtResponse loginResponse = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getFullName(), roles);
-        return loginResponse ;
+        return loginResponse;
 
 
     }
