@@ -13,6 +13,6 @@ public class CreateFolderRequest {
     @NotBlank
     private String folderName;
 
-    private User folderOwner;
+    private Integer folderOwnerId;
 
 }

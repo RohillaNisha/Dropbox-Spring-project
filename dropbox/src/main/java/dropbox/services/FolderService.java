@@ -34,7 +34,7 @@ public class FolderService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 */
         User user = fileService.getUserFromToken(token);
-        createFolderRequest.setFolderOwner(user);
+        createFolderRequest.setFolderOwnerId(user.getId());
         return createFolderRequest;
 
     }
@@ -51,7 +51,7 @@ public class FolderService {
          }
          Folder folderToBeCreated = new Folder();
          folderToBeCreated.setFolderName( createFolderRequest.getFolderName());
-         folderToBeCreated.setUser(createFolderRequest.getFolderOwner());
+         folderToBeCreated.setUserId(createFolderRequest.getFolderOwnerId());
          return this.folderRepository.save(folderToBeCreated);
     }
 
@@ -63,7 +63,7 @@ public class FolderService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found! "));
 */
-         List<Folder> userFolders = folderRepository.findByUser(user);
+         List<Folder> userFolders = folderRepository.findByUserId(user.getId());
          return userFolders;
 
     }

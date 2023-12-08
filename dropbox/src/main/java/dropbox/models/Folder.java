@@ -17,9 +17,10 @@ public class Folder {
     private Long id;
     private String folderName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+/*    @ManyToOne
+    @JoinColumn(name = "user_id")*/
+    @Column(name = "user_id")
+    private Integer userId;
 
 
     public Folder(String folderName) {

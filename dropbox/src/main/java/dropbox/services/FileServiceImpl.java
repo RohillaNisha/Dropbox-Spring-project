@@ -59,6 +59,9 @@ public class FileServiceImpl implements FileService{
         Optional<Folder> folderOptional = folderRepository.findUsersFolderById(folderId, userId);
         if (folderOptional.isPresent()) {
             Folder folder = folderOptional.get();
+            if(data.isEmpty()){
+                throw new FileNotFoundException("No file selected to upload");
+            }
             File file = new File();
             file.setFileName(data.getOriginalFilename());
             file.setFolder(folder);
