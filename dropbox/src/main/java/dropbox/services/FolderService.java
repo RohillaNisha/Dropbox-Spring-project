@@ -23,12 +23,17 @@ public class FolderService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    FileServiceImpl fileService;
+
     // A function to add the user ( logged in) as the folderOwner
-    public CreateFolderRequest setAFolderOwner(CreateFolderRequest createFolderRequest, Authentication authentication){
-        String username = authentication.getName();
+    public CreateFolderRequest setAFolderOwner(CreateFolderRequest createFolderRequest, String token){
+/*
+       String username = authentication.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+*/
+        User user = fileService.getUserFromToken(token);
         createFolderRequest.setFolderOwner(user);
         return createFolderRequest;
 
@@ -51,11 +56,13 @@ public class FolderService {
     }
 
     // getting user object from the authentication
-    public List<Folder> getFoldersOfCurrentUser(Authentication authentication){
-        String username = authentication.getName();
+    public List<Folder> getFoldersOfCurrentUser(String token){
+        User user = fileService.getUserFromToken(token);
+
+      /*  String username = authentication.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found! "));
-
+*/
          List<Folder> userFolders = folderRepository.findByUser(user);
          return userFolders;
 

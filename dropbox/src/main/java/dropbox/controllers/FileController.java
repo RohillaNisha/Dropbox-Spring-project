@@ -28,7 +28,7 @@ public class FileController {
     FileService fileService;
 
     // Upload a file to a specific folder mentioned i the params with its id
-    @PostMapping("/upload/{folderId}")
+    @PostMapping("/{folderId}/upload")
     public ResponseEntity<String> uploadFile(@RequestHeader("Authorization") String token, @PathVariable Long folderId, @RequestParam("file") MultipartFile file) throws IOException {
 
         String uploadStatus = fileService.uploadFile(file, folderId, token);
@@ -37,7 +37,7 @@ public class FileController {
     }
 
     // An endpoint to get all the files in a particular folder of a user
-    @GetMapping("/allFiles/{folderId}")
+    @GetMapping("/{folderId}/all-files")
     public ResponseEntity<List<File>> getAllFilesInAFolder(@RequestHeader("Authorization") String token , @PathVariable Long folderId ) throws FolderNotFoundException {
         List<File> filesInAFolder = fileService.getAllFilesByFolderId(folderId, token);
         return ResponseEntity.ok(filesInAFolder);
@@ -56,7 +56,7 @@ public class FileController {
     }
 
     // An endpoint to get file in a specific folder, by filename
-    @GetMapping("/download/{folderId}/{filename}")
+    @GetMapping("/{folderId}/{filename}/download")
     public ResponseEntity<?> downloadFile(@RequestHeader("Authorization") String token, @PathVariable String filename, @PathVariable Long folderId) throws FileNotFoundException {
         User user = fileService.getUserFromToken(token);
         Optional<File> fileDetails = fileService.retrieveFileByFileNameAndFolderId(filename, folderId, user);
