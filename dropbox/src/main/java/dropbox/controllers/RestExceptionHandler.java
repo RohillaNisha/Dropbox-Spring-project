@@ -26,7 +26,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      HttpStatusCode.valueOf(409), request);
      }
 
-     @ExceptionHandler(value = { PasswordCannotBeNullException.class , UserNameCannotBeNullException.class })
+     @ExceptionHandler(value = { PasswordCannotBeNullException.class , UserNameCannotBeNullException.class , ValueCannotBeNullException.class })
      public ResponseEntity<Object> handleNullValue(Exception e, WebRequest
      request) {
      var error = new HashMap<String, Object>();

@@ -3,6 +3,7 @@ package dropbox.services;
 import dropbox.exceptions.PasswordCannotBeNullException;
 import dropbox.exceptions.UserAlreadyExistsException;
 import dropbox.exceptions.UserNameCannotBeNullException;
+import dropbox.exceptions.ValueCannotBeNullException;
 import dropbox.models.ERole;
 import dropbox.models.Role;
 import dropbox.models.User;
@@ -46,9 +47,12 @@ public class AuthenticationService {
 
     // Registration of a new user with fullName, username, role and password. Role should be an array of roles i.e ["admin","mod"] but is set to default value as ["user"]
     public boolean createAUser(SignupRequest signupRequest)
-            throws UserAlreadyExistsException, UserNameCannotBeNullException, PasswordCannotBeNullException {
+            throws UserAlreadyExistsException, UserNameCannotBeNullException, PasswordCannotBeNullException, ValueCannotBeNullException {
         if (signupRequest.getUsername() == null || signupRequest.getUsername().isBlank() || signupRequest.getUsername().isEmpty()) {
             throw new UserNameCannotBeNullException("Username cannot be null.");
+        }
+        if (signupRequest.getFullName() == null || signupRequest.getFullName().isBlank() || signupRequest.getFullName().isEmpty()) {
+            throw new ValueCannotBeNullException("fullName cannot be null");
         }
         if (signupRequest.getPassword() == null || signupRequest.getPassword().isBlank() || signupRequest.getPassword().isEmpty()) {
             throw new PasswordCannotBeNullException("Password cannot be null.");
